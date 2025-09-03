@@ -17,6 +17,19 @@ struct Note {
     }
 };
 
+char noteFromKeyInput(char keyInput) {
+  switch (keyInput) {
+  case 'z': return 'c';
+  case 'x': return 'd';
+  case 'c': return 'e';
+  case 'v': return 'f';
+  case 'b': return 'g';
+  case 'n': return 'a';
+  case 'm': return 'b';
+  default: return ' ';
+  }
+}
+
 void PlayNoteFromKeyInput(char keyInput)
 {
   switch (keyInput) {
@@ -43,28 +56,56 @@ void setup() {
 
 char keyInput;
 std::vector<Note> notes;
+int currentPlaybackNote = 0;
+long long playbackStartTime = 0;
+long long playbackCurrentTime = 0;
 long long CurrentmusicTime = 0;
 long long startmusicTime = 0;
 bool rectorder = false;
+bool playback = false;
 
 
 void loop() {
   if (Serial.available()) {
     keyInput = Serial.read();
-    PlayNoteFromKeyInput(keyInput);
-
+    if(playback == false )
+    {
+      PlayNoteFromKeyInput(keyInput);
+    }
+    // enable playback of recorded notes
+    if(keyInput == 'p' && rectorder == false)
+    {
+      if(playback == true)
+      {
+        currentPlaybackNote = 0;
+        playback = false;
+      }
+      else
+      {
+        playbackCurrentTime = millis();
+        playback = true;
+      }
+      PlaybackStatus(playback);
+    }
     //recorder mode toggle
-    if(keyInput == 'r')
+    if(keyInput == 'r' && playback == false)
     {
       if(rectorder == true)
       {
-        // reset recorder and set up for new recording
-        
+        // // reset recorder and set up for new recording
+        //  for (auto note : notes) {
+        //   Serial.print(note.name);
+        //   Serial.print(" ");
+        //   Serial.print(note.octave);
+        //   Serial.print(" ");
+        //   Serial.println(note.timing);
+        // }
         rectorder = false;
       }
       else
       {
         // start recording new notes
+        notes.clear();
         startmusicTime = millis();
         rectorder = true; 
       }
@@ -72,11 +113,23 @@ void loop() {
     }
 
     // recorder recording notes
-    if(rectorder == true)
+    if(rectorder == true && keyInput != 'p' && keyInput != 'r')
     {
-      notes.push_back(Note(keyInput, 4, millis() - startmusicTime));
+      notes.push_back(Note(noteFromKeyInput(keyInput), 4, millis() - startmusicTime));
     }
+  }
 
-
+  if(playback == true)
+  {
+    if(notes[currentPlaybackNote].timing + playbackCurrentTime <= millis())
+    {
+      playNote(notes[currentPlaybackNote].name);
+      currentPlaybackNote += 1;
+      if(currentPlaybackNote >= notes.size())
+      {
+        playback = false;
+        PlaybackStatus(playback);
+      }
+    }
   }
 }

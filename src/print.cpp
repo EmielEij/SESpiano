@@ -3,6 +3,7 @@
 
 char currentNote = ' ';
 bool recordingStatus = false;
+bool playbackStatus = false;
 
 void formatAndPrintString()
 {
@@ -41,7 +42,20 @@ void formatAndPrintString()
 
     if(recordingStatus == true)
     {
-        s += " Recording ";
+        s += "|Recording|";
+    }
+    else 
+    {
+        s += "|        |";
+    }
+
+    if (playbackStatus == true)
+    {
+        s += "|Playback|";
+    }
+    else 
+    {
+        s += "|        |";
     }
 
     Serial.print('\r'); 
@@ -56,6 +70,13 @@ void printKeyInput(char keyInput) {
 void RecorderStatus(bool recording)
 {
     recordingStatus = recording;
+    currentNote = ' ';
+    formatAndPrintString();
+}
+
+void PlaybackStatus(bool playback)
+{
+    playbackStatus = playback;
     currentNote = ' ';
     formatAndPrintString();
 }
