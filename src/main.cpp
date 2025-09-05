@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <string>
+#include <algorithm>
 #include <vector>
 #include "Piano.h"
 #include "print.h"
@@ -56,12 +58,19 @@ void CheckOctave() {
 char noteFromKeyInput(char keyInput) {
   switch (keyInput) {
   case 'z': return 'c';
+  case 'Z': return 'c';
   case 'x': return 'd';
+  case 'X': return 'd';
   case 'c': return 'e';
+  case 'C': return 'e';
   case 'v': return 'f';
+  case 'V': return 'f';
   case 'b': return 'g';
+  case 'B': return 'g';
   case 'n': return 'a';
+  case 'N': return 'a';
   case 'm': return 'b';
+  case 'M': return 'b';
   default: return ' ';
   }
 }
@@ -80,6 +89,25 @@ void PlayNoteFromKeyInput(char keyInput)
   }
 }
 
+std::vector<Note> notes;
+
+uint32_t currentTime = 0;       // global timeline
+uint32_t msPerStep = 90; // resolution try 166 or 200 for timing
+
+// updated parseSongLine with measureStart
+void parseSongLine(const std::string &pattern, int octave,
+                   std::vector<Note> &notes, uint32_t measureStart) {
+    for (size_t i = 0; i < pattern.size(); i++) {
+        char c = pattern[i];
+        if (c != '-' && c != '|') {
+            uint32_t noteTime = measureStart + i * msPerStep;
+            notes.emplace_back(c, octave, noteTime);
+        }
+    }
+}
+
+
+
 void setup() {
   Serial.begin(115200);
   while (!Serial);
@@ -88,10 +116,189 @@ void setup() {
   ButtonDown.attach(BUTTON_PIN_DOWN, INPUT_PULLUP);
 
   Piano_begin();
+    uint32_t measureStart;
+    // ===== Measure 1 =====
+    measureStart = currentTime;
+    parseSongLine("--d---------------d-------", 5, notes, measureStart);
+    parseSongLine("dd--a--G-g-f-dfgcc--a--G-g", 4, notes, measureStart);
+    currentTime += 26 * msPerStep;
+
+    // ===== Measure 2 =====
+    measureStart = currentTime;
+    parseSongLine("--------d---------------d-", 5, notes, measureStart);
+    parseSongLine("-f-dfg----a--G-g-f-dfg----", 4, notes, measureStart);
+    parseSongLine("------bb--------------AA--", 3, notes, measureStart);
+    currentTime += 26 * msPerStep;
+
+    // ===== Measure 3 =====
+    measureStart = currentTime;
+    parseSongLine("--------------d-----------", 5, notes, measureStart);
+    parseSongLine("a--G-g-f-dfgdd--a--G-g-f-d", 4, notes, measureStart);
+    currentTime += 26 * msPerStep;
+
+    // ===== Measure 4 =====
+    measureStart = currentTime;
+    parseSongLine("----d---------------d-----", 5, notes, measureStart);
+    parseSongLine("fgcc--a--G-g-f-dfg----a--G", 4, notes, measureStart);
+    parseSongLine("------------------bb------", 3, notes, measureStart);
+    currentTime += 26 * msPerStep;
+
+    // ===== Measure 5 =====
+    measureStart = currentTime;
+    parseSongLine("----------d---------------", 5, notes, measureStart);
+    parseSongLine("-g-f-dfg----a--G-g-f-dfgdd", 4, notes, measureStart);
+    parseSongLine("--------AA----------------", 4, notes, measureStart);
+    currentTime += 26 * msPerStep;
+
+    // ===== Measure 6 =====
+    measureStart = currentTime;
+    parseSongLine("d---------------d---------", 5, notes, measureStart);
+    parseSongLine("--a--G-g-f-dfgcc--a--G-g-f", 4, notes, measureStart);
+    currentTime += 26 * msPerStep;
+
+    // ===== Measure 7 =====
+    measureStart = currentTime;
+    parseSongLine("------d---------------d---", 5, notes, measureStart);
+    parseSongLine("-dfg----a--G-g-f-dfg----a-", 4, notes, measureStart);
+    parseSongLine("----bb--------------AA----", 3, notes, measureStart);
+    currentTime += 26 * msPerStep;
+
+    // ===== Measure 8 =====
+    measureStart = currentTime;
+    parseSongLine("-------------d------------", 5, notes, measureStart);
+    parseSongLine("-G-g-f-dfgdd--a--G-g-f-dfg", 4, notes, measureStart);
+    currentTime += 26 * msPerStep;
+
+//-------------------------------------------------------------
+  // msPerStep = 166;
+  // // ===== Measure 1 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------------", 5, notes, measureStart);
+  //   parseSongLine("C-----d-e---e---e---a---a-", 4, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 2 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--C---C-------------------", 5, notes, measureStart);
+  //   parseSongLine("------------b-a-----------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 3 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------------", 5, notes, measureStart);
+  //   parseSongLine("----G---a---b-------------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 4 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--C-----------------------", 5, notes, measureStart);
+  //   parseSongLine("--------b-a---------------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 5 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------------", 5, notes, measureStart);
+  //   parseSongLine("C-----d-e---e---e---a---a-", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 6 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--C---C-------------------", 5, notes, measureStart);
+  //   parseSongLine("------------b-a-----------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 7 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------------", 5, notes, measureStart);
+  //   parseSongLine("----G---a---b-------------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 8 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--C-----------------------", 5, notes, measureStart);
+  //   parseSongLine("--------b-a---------------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 9 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------------", 5, notes, measureStart);
+  //   parseSongLine("e-----a-G---G---G---G---F-", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 10 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------------", 5, notes, measureStart);
+  //   parseSongLine("--G---a---------------G---", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 11 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------e---d-", 5, notes, measureStart);
+  //   parseSongLine("--a-b---b---b---b---------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;  
+
+  //   // ===== Measure 12 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--C-----------------------", 5, notes, measureStart);
+  //   parseSongLine("------------------C-----d-", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 13 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------C---C-", 5, notes, measureStart);
+  //   parseSongLine("e---e---e---a---a---------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 14 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------------", 5, notes, measureStart);
+  //   parseSongLine("----b-a---------------G---", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 15 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------C-----", 5, notes, measureStart);
+  //   parseSongLine("a---b---------------------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+  //   // ===== Measure 16 =====
+  //   measureStart = currentTime;
+  //   parseSongLine("--------------------------", 5, notes, measureStart);
+  //   parseSongLine("b-a-----------------------", 4, notes, measureStart);
+  //   parseSongLine("--------------------------", 3, notes, measureStart);
+  //   currentTime += 26 * msPerStep;
+
+
+
+
+  std::sort(notes.begin(), notes.end(),
+          [](const Note &a, const Note &b) {
+              if (a.timing == b.timing) return a.octave < b.octave;
+              return a.timing < b.timing;
+          });
+
+    
 }
 
+
 char keyInput;
-std::vector<Note> notes;
+
+
+
 int currentPlaybackNote = 0;
 long long playbackStartTime = 0;
 long long playbackCurrentTime = 0;
@@ -121,6 +328,14 @@ void loop() {
       }
       else
       {
+        Serial.println("playback");
+        for (auto note : notes) {
+          Serial.print(note.name);
+          Serial.print(" ");
+          Serial.print(note.octave);
+          Serial.print(" ");
+          Serial.println(note.timing);
+        }
         playbackCurrentTime = millis();
         playback = true;
       }

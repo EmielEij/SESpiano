@@ -68,12 +68,19 @@ float getNoteFrequency(char key, int num) {
 int playNote(char keyInput, int octave) {
     switch (keyInput) {
         case 'c': printKeyInput('z'); piano1.noteOn(getNoteFrequency('c', octave), 1.0); return 1;
+        case 'C': printKeyInput('z'); piano1.noteOn(getNoteFrequency('c', octave), 1.0); return 1;
         case 'd': printKeyInput('x'); piano1.noteOn(getNoteFrequency('d', octave), 1.0); return 1;
+        case 'D': printKeyInput('x'); piano1.noteOn(getNoteFrequency('d', octave), 1.0); return 1;
         case 'e': printKeyInput('c'); piano1.noteOn(getNoteFrequency('e', octave), 1.0); return 1;
+        case 'E': printKeyInput('c'); piano1.noteOn(getNoteFrequency('e', octave), 1.0); return 1;
         case 'f': printKeyInput('v'); piano1.noteOn(getNoteFrequency('f', octave), 1.0); return 1;
+        case 'F': printKeyInput('v'); piano1.noteOn(getNoteFrequency('f', octave), 1.0); return 1;
         case 'g': printKeyInput('b'); piano1.noteOn(getNoteFrequency('g', octave), 1.0); return 1;
+        case 'G': printKeyInput('b'); piano1.noteOn(getNoteFrequency('g', octave), 1.0); return 1;
         case 'a': printKeyInput('n'); piano1.noteOn(getNoteFrequency('a', octave), 1.0); return 1;
+        case 'A': printKeyInput('n'); piano1.noteOn(getNoteFrequency('a', octave), 1.0); return 1;
         case 'b': printKeyInput('m'); piano1.noteOn(getNoteFrequency('b', octave), 1.0); return 1;
+        case 'B': printKeyInput('m'); piano1.noteOn(getNoteFrequency('b', octave), 1.0); return 1;
         default: return 0;
     }
 }
