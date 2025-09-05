@@ -34,11 +34,14 @@ void CheckVolume() {
 
 #define BUTTON_DEBOUNCE_DELAY 25
 
-#define BUTTON_PIN_UP 41 
-Bounce ButtonUp = Bounce(BUTTON_PIN_UP, BUTTON_DEBOUNCE_DELAY);
+#define BUTTON_PIN_OCTAVE_UP 41 
+Bounce ButtonUp = Bounce(BUTTON_PIN_OCTAVE_UP, BUTTON_DEBOUNCE_DELAY);
 
-#define BUTTON_PIN_DOWN 40
-Bounce ButtonDown = Bounce(BUTTON_PIN_DOWN, BUTTON_DEBOUNCE_DELAY);
+#define BUTTON_PIN_OCTAVE_DOWN 40
+Bounce ButtonDown = Bounce(BUTTON_PIN_OCTAVE_DOWN, BUTTON_DEBOUNCE_DELAY);
+
+#define BUTTON_PIN_CHANGE_INSTRUMENT 38
+Bounce ButtonChangeInstrument = Bounce(BUTTON_PIN_CHANGE_INSTRUMENT, BUTTON_DEBOUNCE_DELAY);
 
 int octave = 1; 
 
@@ -46,12 +49,14 @@ void CheckOctave() {
   ButtonUp.update();
   ButtonDown.update(); 
 
-  if (ButtonUp.changed() && octave < 7) {
+  if (ButtonUp.fell() && octave < 7) {
     octave++;
+    OctaveStatus(octave);
   }
 
-  if (ButtonDown.changed() && octave > 1) {
+  if (ButtonDown.fell() && octave > 1) {
     octave--; 
+    OctaveStatus(octave);
   }
 }
 
@@ -112,8 +117,8 @@ void setup() {
   Serial.begin(115200);
   while (!Serial);
 
-  ButtonUp.attach(BUTTON_PIN_UP, INPUT_PULLUP); 
-  ButtonDown.attach(BUTTON_PIN_DOWN, INPUT_PULLUP);
+  ButtonUp.attach(BUTTON_PIN_OCTAVE_UP, INPUT_PULLUP); 
+  ButtonDown.attach(BUTTON_PIN_OCTAVE_DOWN, INPUT_PULLUP);
 
   Piano_begin();
     uint32_t measureStart;
@@ -378,6 +383,7 @@ void loop() {
     if(notes[currentPlaybackNote].timing + playbackCurrentTime <= millis())
     {
       playNote(notes[currentPlaybackNote].name, notes[currentPlaybackNote].octave);
+      OctaveStatus(notes[currentPlaybackNote].octave);
       currentPlaybackNote += 1;
       if(currentPlaybackNote >= notes.size())
       {
