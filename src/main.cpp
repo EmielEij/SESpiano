@@ -127,6 +127,7 @@ void loop() {
       currentPlaybackNote += 1;
       if(currentPlaybackNote >= notes.size())
       {
+        currentPlaybackNote = 0;
         playback = false;
         PlaybackStatus(playback);
       }
