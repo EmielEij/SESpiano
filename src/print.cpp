@@ -4,59 +4,63 @@
 char currentNote = ' ';
 bool recordingStatus = false;
 bool playbackStatus = false;
+int Octave = 1; 
 
 void formatAndPrintString()
 {
     std::string s;
+    s += "|";
     switch (currentNote) {
         case 'z': 
             // Serial.print('\r'); 
             // Serial.print(" Z x c v b n m ");
-            s += " Z x c v b n m ";
+            s += "Z x c v b n m";
         break;
         case 'x': 
-            s += " z X c v b n m ";
+            s += "z X c v b n m";
         break;
         case 'c': 
-            s += " z x C v b n m ";
+            s += "z x C v b n m";
         break;
         case 'v': 
-            s += " z x c V b n m ";
+            s += "z x c V b n m";
         break;
         case 'b': 
-            s += " z x c v B n m ";
+            s += "z x c v B n m";
         break;
         case 'n': 
-            s += " z x c v b N m ";
+            s += "z x c v b N m";
         break;
         case 'm': 
-            s += " z x c v b n M ";
+            s += "z x c v b n M";
         break;
         case ' ':
-            s += " z x c v b n m ";
+            s += "z x c v b n m";
         break;
         default:
-            s += " z x c v b n m ";
+            s += "z x c v b n m";
         break;
     }
 
     if(recordingStatus == true)
     {
-        s += "|Recording|";
+        s += "|Recording";
     }
     else 
     {
-        s += "|        |";
+        s += "|        ";
     }
 
     if (playbackStatus == true)
     {
-        s += "|Playback|";
+        s += "|Playback";
     }
     else 
     {
-        s += "|        |";
+        s += "|        ";
     }
+
+    s += "|Octave: " + std::to_string(Octave) + "|";
 
     Serial.print('\r'); 
     Serial.print(s.c_str());
@@ -79,4 +83,10 @@ void PlaybackStatus(bool playback)
     playbackStatus = playback;
     currentNote = ' ';
     formatAndPrintString();
+}
+
+void OctaveStatus(int octave) {
+    Octave = octave; 
+    currentNote = ' ';
+    formatAndPrintString(); 
 }
