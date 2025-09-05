@@ -1,5 +1,6 @@
 #include "print.h"
 #include <string>
+#include <sstream>
 
 char currentNote = ' ';
 bool recordingStatus = false;
@@ -60,7 +61,9 @@ void formatAndPrintString()
         s += "|        ";
     }
 
-    s += "|Octave: " + std::to_string(Octave) + "|";
+    std::ostringstream oss;
+    oss << "|Octave: " << Octave << "|";
+    s += oss.str();
 
     Serial.print('\r'); 
     Serial.print(s.c_str());
@@ -87,6 +90,5 @@ void PlaybackStatus(bool playback)
 
 void OctaveStatus(int octave) {
     Octave = octave; 
-    currentNote = ' ';
     formatAndPrintString(); 
 }

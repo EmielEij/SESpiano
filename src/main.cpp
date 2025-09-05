@@ -333,14 +333,14 @@ void loop() {
       }
       else
       {
-        Serial.println("playback");
-        for (auto note : notes) {
-          Serial.print(note.name);
-          Serial.print(" ");
-          Serial.print(note.octave);
-          Serial.print(" ");
-          Serial.println(note.timing);
-        }
+        // Serial.println("playback");
+        // for (auto note : notes) {
+        //   Serial.print(note.name);
+        //   Serial.print(" ");
+        //   Serial.print(note.octave);
+        //   Serial.print(" ");
+        //   Serial.println(note.timing);
+        // }
         playbackCurrentTime = millis();
         playback = true;
       }
