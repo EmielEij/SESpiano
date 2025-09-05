@@ -39,7 +39,11 @@ const Note notes[] = {
 void Piano_begin() {
     AudioMemory(15);
     sgtl5000_1.enable();
-    sgtl5000_1.volume(0.5);
+    sgtl5000_1.volume(0.3);
+}
+
+void setvolume(double V){
+    sgtl5000_1.volume(V);
 }
 
 float getNoteFrequency(char key, int num) {
@@ -61,15 +65,15 @@ float getNoteFrequency(char key, int num) {
     return notes[arrayIndex].frequency;
 }
 
-int playNote(char keyInput) {
+int playNote(char keyInput, int octave) {
     switch (keyInput) {
-        case 'c': printKeyInput('z'); piano1.noteOn(getNoteFrequency('c', 4), 1.0); return 1;
-        case 'd': printKeyInput('x'); piano1.noteOn(getNoteFrequency('d', 4), 1.0); return 1;
-        case 'e': printKeyInput('c'); piano1.noteOn(getNoteFrequency('e', 4), 1.0); return 1;
-        case 'f': printKeyInput('v'); piano1.noteOn(getNoteFrequency('f', 4), 1.0); return 1;
-        case 'g': printKeyInput('b'); piano1.noteOn(getNoteFrequency('g', 4), 1.0); return 1;
-        case 'a': printKeyInput('n'); piano1.noteOn(getNoteFrequency('a', 4), 1.0); return 1;
-        case 'b': printKeyInput('m'); piano1.noteOn(getNoteFrequency('b', 4), 1.0); return 1;
+        case 'c': printKeyInput('z'); piano1.noteOn(getNoteFrequency('c', octave), 1.0); return 1;
+        case 'd': printKeyInput('x'); piano1.noteOn(getNoteFrequency('d', octave), 1.0); return 1;
+        case 'e': printKeyInput('c'); piano1.noteOn(getNoteFrequency('e', octave), 1.0); return 1;
+        case 'f': printKeyInput('v'); piano1.noteOn(getNoteFrequency('f', octave), 1.0); return 1;
+        case 'g': printKeyInput('b'); piano1.noteOn(getNoteFrequency('g', octave), 1.0); return 1;
+        case 'a': printKeyInput('n'); piano1.noteOn(getNoteFrequency('a', octave), 1.0); return 1;
+        case 'b': printKeyInput('m'); piano1.noteOn(getNoteFrequency('b', octave), 1.0); return 1;
         default: return 0;
     }
 }

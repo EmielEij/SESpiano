@@ -2,7 +2,7 @@
 #include <vector>
 #include "Piano.h"
 #include "print.h"
-
+#include "Bounce2.h"
 
 struct Note {
     char name;       // single character note: C, D, E, F, G, A, B
@@ -16,6 +16,42 @@ struct Note {
         timing = t;
     }
 };
+
+const int PotMeterPin = 39;
+float potValue = 0.0;
+
+void CheckVolume() {
+  float volume = analogRead(PotMeterPin);   
+  float lastVolume = 0.0; 
+  
+  if (volume != lastVolume) {
+    setvolume(volume * 0.8 / 1023.0);
+    lastVolume = volume; 
+  }
+}
+
+#define BUTTON_DEBOUNCE_DELAY 25
+
+#define BUTTON_PIN_UP 41 
+Bounce ButtonUp = Bounce(BUTTON_PIN_UP, BUTTON_DEBOUNCE_DELAY);
+
+#define BUTTON_PIN_DOWN 40
+Bounce ButtonDown = Bounce(BUTTON_PIN_DOWN, BUTTON_DEBOUNCE_DELAY);
+
+int octave = 1; 
+
+void CheckOctave() {
+  ButtonUp.update();
+  ButtonDown.update(); 
+
+  if (ButtonUp.changed() && octave < 7) {
+    octave++;
+  }
+
+  if (ButtonDown.changed() && octave > 1) {
+    octave--; 
+  }
+}
 
 char noteFromKeyInput(char keyInput) {
   switch (keyInput) {
@@ -33,23 +69,23 @@ char noteFromKeyInput(char keyInput) {
 void PlayNoteFromKeyInput(char keyInput)
 {
   switch (keyInput) {
-  case 'z': playNote('c'); break;
-  case 'x': playNote('d'); break;
-  case 'c': playNote('e'); break;
-  case 'v': playNote('f'); break;
-  case 'b': playNote('g'); break;
-  case 'n': playNote('a'); break;
-  case 'm': playNote('b'); break;
+  case 'z': playNote('c', octave); break;
+  case 'x': playNote('d', octave); break;
+  case 'c': playNote('e', octave); break;
+  case 'v': playNote('f', octave); break;
+  case 'b': playNote('g', octave); break;
+  case 'n': playNote('a', octave); break;
+  case 'm': playNote('b', octave); break;
   default: break;
   }
 }
 
-
-
-
 void setup() {
   Serial.begin(115200);
   while (!Serial);
+
+  ButtonUp.attach(BUTTON_PIN_UP, INPUT_PULLUP); 
+  ButtonDown.attach(BUTTON_PIN_DOWN, INPUT_PULLUP);
 
   Piano_begin();
 }
@@ -66,6 +102,9 @@ bool playback = false;
 
 
 void loop() {
+  CheckVolume(); 
+  CheckOctave(); 
+
   if (Serial.available()) {
     keyInput = Serial.read();
     if(playback == false )
@@ -115,7 +154,7 @@ void loop() {
     // recorder recording notes
     if(rectorder == true && keyInput != 'p' && keyInput != 'r')
     {
-      notes.push_back(Note(noteFromKeyInput(keyInput), 4, millis() - startmusicTime));
+      notes.push_back(Note(noteFromKeyInput(keyInput), octave, millis() - startmusicTime));
     }
   }
 
@@ -123,7 +162,7 @@ void loop() {
   {
     if(notes[currentPlaybackNote].timing + playbackCurrentTime <= millis())
     {
-      playNote(notes[currentPlaybackNote].name);
+      playNote(notes[currentPlaybackNote].name, notes[currentPlaybackNote].octave);
       currentPlaybackNote += 1;
       if(currentPlaybackNote >= notes.size())
       {
